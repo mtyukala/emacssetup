@@ -88,13 +88,40 @@
 (blink-cursor-mode -1)
 (add-hook 'emacs-startup-hook 'toggle-frame-maximized)
 
-(setq-default fill-column 80)
 ;; disable the annoying bell ring
 (setq ring-bell-function 'ignore)
-(setq initial-scratch-message "")
 
-;; disable startup screen
+(setq initial-scratch-message "")
+(setq suggest-key-bindings 4)
 (setq inhibit-startup-screen t)
+
+;;; Fix scrolling
+(setq mouse-wheel-progressive-speed nil)
+(setq scroll-margin 3)
+(setq scroll-conservatively 100000)
+(setq-default cursor-type 'hbar)
+(setq scroll-preserve-screen-position 'always)
+
+(setq-default whitespace-style '(face trailing lines empty indentation::space))
+(setq-default whitespace-line-column 80)
+(setq-default fill-column 80)
+
+;;; Set undo limits
+(setq undo-limit (* 16 1024 1024))
+(setq undo-strong-limit (* 24 1024 1024))
+(setq undo-outer-limit (* 64 1024 1024))
+
+;; Ignore case for completion
+(setq completion-ignore-case t)
+(setq read-buffer-completion-ignore-case t)
+(setq read-file-name-completion-ignore-case t)
+
+;;; Search highlight
+(setq search-highlight t)
+(setq query-replace-highlight t)
+
+;; Newline at end of file
+(setq require-final-newline t)
 
 ;; nice scrolling
 (setq scroll-margin 0
@@ -103,15 +130,7 @@
 
 (load-theme 'material t)
 
-
 (set-cursor-color "#ffffff")
-(setq-default cursor-type 'hbar)
-
-;;; Fix scrolling
-(setq mouse-wheel-progressive-speed nil)
-(setq scroll-margin 3)
-(setq scroll-conservatively 100000)
-(setq scroll-preserve-screen-position 'always)
 
 ;; more useful frame title, that show either a file or a
 ;; buffer name (if the buffer isn't visiting a file)
@@ -126,13 +145,6 @@
 ;; meaning) of any files you load.
 (setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
 (setq-default tab-width 8)            ;; but maintain correct appearance
-
-;; Newline at end of file
-(setq require-final-newline t)
-
-
-;; Wrap lines at 80 characters
-(setq-default fill-column 80)
 
 ;; delete the selection with a keypress
 (delete-selection-mode t)
@@ -151,19 +163,8 @@
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 
-
-(require 'auto-complete)
+;;(init-el-require-package auto-complete)
 (global-auto-complete-mode t)
-(use-package company
-  :ensure t
-  :config
-  (setq  company-idle-delay 0)
-  (setq company-minimum-prefix-length 3)
-  )
-;; built-in packages
-(use-package paren
-  :config
-  (show-paren-mode +1))
 
 ;; delete whitespace
 (defun my-delete-trailing-whitespace ()
@@ -171,8 +172,6 @@
   (when (not (string= (file-name-extension buffer-file-name) "http"))
     (delete-trailing-whitespace)))
 
-(setq-default whitespace-style '(face trailing lines empty indentation::space))
-(setq-default whitespace-line-column 80)
 
 ;; delete the selection with a keypress
 (delete-selection-mode t)
@@ -215,49 +214,7 @@
 ;; configure line numbers
 (add-hook 'prog-mode-hook 'global-linum-mode)
 (add-hook 'prog-mode-hook 'highlight-beyond-fill-column)
-
 (setq linum-format "%4d \u2502 ")
-
-;; highlight the current line
-(use-package hl-line
-  :config
-  (global-hl-line-mode +1))
-
-(use-package abbrev
-  :config
-  (setq save-abbrevs 'silently)
-  (setq-default abbrev-mode t))
-
-(set-frame-font "Source Code Pro Medium-13")
-(setq fci-rule-width 1)
-(setq fci-rule-color "darkblue")
-
-;; start in fullscreen mode
-(add-hook 'emacs-startup-hook 'toggle-frame-maximized)
-
-(use-package highlight-symbol
-  :ensure t
-  :config
-  (setq highlight-symbol-idle-delay 0.5)
-  (add-hook 'prog-mode-hook 'highlight-symbol-mode))
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
-
-
-;;; Set undo limits
-(setq undo-limit (* 16 1024 1024))
-(setq undo-strong-limit (* 24 1024 1024))
-(setq undo-outer-limit (* 64 1024 1024))
-
-;; Ignore case for completion
-(setq completion-ignore-case t)
-(setq read-buffer-completion-ignore-case t)
-(setq read-file-name-completion-ignore-case t)
-
-;;; Search highlight
-(setq search-highlight t)
-(setq query-replace-highlight t)
 
 ;; ido mode
 (init-el-require-package ido-vertical-mode)
@@ -290,11 +247,35 @@
                "{" nil
                :post-handlers '((init-el-smartparens-create-and-enter-block "RET")))
 
+;; highlight the current line
+(use-package hl-line
+  :config
+  (global-hl-line-mode +1))
+
+(use-package abbrev
+  :config
+  (setq save-abbrevs 'silently)
+  (setq-default abbrev-mode t))
+
+(set-frame-font "Source Code Pro Medium-13")
+(setq fci-rule-width 1)
+(setq fci-rule-color "darkblue")
+
+;; start in fullscreen mode
+(add-hook 'emacs-startup-hook 'toggle-frame-maximized)
+
+(use-package highlight-symbol
+  :ensure t
+  :config
+  (setq highlight-symbol-idle-delay 0.5)
+  (add-hook 'prog-mode-hook 'highlight-symbol-mode))
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
 ;;; highlight-quoted
 (init-el-require-package highlight-quoted)
 (add-hook 'emacs-lisp-mode-hook #'highlight-quoted-mode)
 (add-hook 'lisp-mode-hook #'highlight-quoted-mode)
 (add-hook 'scheme-mode-hook #'highlight-quoted-mode)
-
-
 ;;; basic.el ends here
