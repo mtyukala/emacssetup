@@ -18,9 +18,7 @@
   )
 
 (package-initialize)
-(package-refresh-contents)
-(package-install 'use-package)
-
+(package-refresh-contents t)
 
 ;; duplicate the current line
 (defun duplicate-line()
@@ -42,7 +40,7 @@
 (column-number-mode t)
 (size-indication-mode t)
 
-;; enable y/n answers
+;; use y / n instead of yes / no
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (custom-set-variables
@@ -52,9 +50,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (lsp-mode find-file-in-project diffscuss-mode csproj-mode vimish-fold web-beautify web-completion-data highlight recently desktop-environment realgud meghanada hlinum highlight-symbol company
-              (quote auto-complete)
-              auto-complete aggressive-indent flycheck flylisp highlight-quoted smartparens csharp-mode material-theme js2-mode ahungry-theme))))
+    (lsp-mode find-file-in-project diffscuss-mode py-autopep8 vimish-fold web-beautify web-completion-data highlight recently desktop-environment realgud meghanada hlinum highlight-symbol companye  aggressive-indent flycheck flylisp highlight-quoted smartparens material-theme js2-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -85,12 +81,12 @@
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
 (blink-cursor-mode -1)
 (add-hook 'emacs-startup-hook 'toggle-frame-maximized)
 
 ;; disable the annoying bell ring
 (setq ring-bell-function 'ignore)
-
 (setq initial-scratch-message "")
 (setq suggest-key-bindings 4)
 (setq inhibit-startup-screen t)
@@ -99,8 +95,8 @@
 (setq mouse-wheel-progressive-speed nil)
 (setq scroll-margin 3)
 (setq scroll-conservatively 100000)
-(setq-default cursor-type 'hbar)
 (setq scroll-preserve-screen-position 'always)
+(setq-default cursor-type 'hbar)
 
 (setq-default whitespace-style '(face trailing lines empty indentation::space))
 (setq-default whitespace-line-column 80)
@@ -139,10 +135,6 @@
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
 
-; Emacs modes typically provide a standard means to change the
-;; indentation width -- eg. c-basic-offset: use that to adjust your
-;; personal indentation width, while maintaining the style (and
-;; meaning) of any files you load.
 (setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
 (setq-default tab-width 8)            ;; but maintain correct appearance
 
@@ -162,9 +154,6 @@
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
-
-;;(init-el-require-package auto-complete)
-(global-auto-complete-mode t)
 
 ;; delete whitespace
 (defun my-delete-trailing-whitespace ()
@@ -190,58 +179,49 @@
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 
-(init-el-require-package auto-complete)
-(global-auto-complete-mode t)
-(use-package company
+;; jedi mode setup
+(use-package company-jedi
   :ensure t
   :config
-  (setq  company-idle-delay 0)
-  (setq company-minimum-prefix-length 3)
-  )
-;; built-in packages
-(use-package paren
-  :config
-  (show-paren-mode +1))
-
-(use-package electric
-  :ensure t
+  :hook
+  ((python-mode . jedi:setup))
   :init
-  (progn
-    (electric-pair-mode +1)
-    )
-  )
+  (setq jedi:complete-on-dot t)
+  (setq jedi:use-shortcuts t)
+  (add-hook 'python-mode-hook
+            (lambda () (add-to-list 'company-backends 'company-jedi))))
+
+(setq jedi-custom-file (expand-file-name "jedi-custom.el" user-emacs-directory))
+(when (file-exists-p jedi-custom-file)
+  (load jedi-custom-file))
 
 ;; configure line numbers
-(add-hook 'prog-mode-hook 'global-linum-mode)
+(global-linum-mode t)
 (add-hook 'prog-mode-hook 'highlight-beyond-fill-column)
 (setq linum-format "%4d \u2502 ")
 
 ;; ido mode
-(init-el-require-package ido-vertical-mode)
+(require 'ido-vertical-mode)
 (ido-mode 1)
 (ido-vertical-mode 1)
-;; use current pane for newly opened file
 (setq ido-default-file-method 'selected-window)
-;; use current pane for newly switched buffer
 (setq ido-default-buffer-method 'selected-window)
-;; show any name that has the chars you typed
 (setq ido-enable-flex-matching t)
-;; stop ido from suggesting when naming new file
 (define-key (cdr ido-minor-mode-map-entry) [remap write-file] nil)
 
-;; smart tab behavior - indent or complete
-(setq tab-always-indent 'complete)
-;; smart tab behavior - indent or complete
+;;  tab behavior - indent or complete
 (setq tab-always-indent 'complete)
 
 ;;; smartparens
 (init-el-require-package smartparens)
 (require 'smartparens-config)
 (smartparens-global-mode t)
+
 (setq sp-highlight-pair-overlay nil)
 (setq sp-highlight-wrap-overlay nil)
 (setq sp-highlight-wrap-tag-overlay nil)
 (setq-default sp-autoskip-closing-pair t)
+
 (sp-local-pair '(c-mode c++-mode java-mode css-mode php-mode js-mode perl-mode
                         cperl-mode rust-mode sh-mode)
                "{" nil
@@ -272,6 +252,10 @@
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
+
+(use-package yasnippet
+  :config
+  (yas-global-mode 1))
 
 ;;; highlight-quoted
 (init-el-require-package highlight-quoted)

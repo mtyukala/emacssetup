@@ -12,7 +12,7 @@
     flycheck                        ;; On the fly syntax checking
     py-autopep8                     ;; Run autopep8 on save
     blacken                         ;; Black formatting on save
-    magit
+    magit   
     pyenv-mode))
 
 ;; install all packages in list
