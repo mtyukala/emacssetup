@@ -12,12 +12,11 @@
     flycheck                        ;; On the fly syntax checking
     py-autopep8                     ;; Run autopep8 on save
     blacken                         ;; Black formatting on save
-    magit   
+    magit
     pyenv-mode))
 
-;; install all packages in list
-(mapc #'(lambda (package)
-          (unless (package-installed-p package)
-            (package-install package)))
-      my_packages)
+(defun my-packages-installed-p ()
+   (loop for p in my_packages
+          when (not (package-installed-p p)) do (return nil)
+                  finally (return t)))
 ;;; packages.el ends here

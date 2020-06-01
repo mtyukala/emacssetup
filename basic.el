@@ -3,21 +3,32 @@
 ;;; Code:
 
 (require 'package)
-;;(require 'use-package)
+
 
 (when (>= emacs-major-version 24)
+  (require 'package) 
+  (package-initialize)
   (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
 		      (not (gnutls-available-p))))
 	 (proto (if no-ssl "http" "https")))
     ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-    (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-    ;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+;;    (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+    (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
     (when (< emacs-major-version 24)
       ;; For important compatibility libraries like cl-lib
       (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
   )
 
-(package-initialize)
+;; Bootstrap 'use-package'
+;; (eval-after-load 'gnutls
+;;   '(add-to-list 'gnutls-trustfiles "/etc/ssl/cert.pem"))
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-when-compile
+  (require 'use-package))
+(require 'bind-key)
+(setq use-package-always-ensure t)
 (package-refresh-contents t)
 
 ;; duplicate the current line
@@ -40,6 +51,9 @@
 (column-number-mode t)
 (size-indication-mode t)
 
+(save-place-mode 1)
+(show-paren-mode 1)
+
 ;; use y / n instead of yes / no
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -50,13 +64,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (lsp-mode find-file-in-project diffscuss-mode py-autopep8 vimish-fold web-beautify web-completion-data highlight recently desktop-environment realgud meghanada hlinum highlight-symbol companye  aggressive-indent flycheck flylisp highlight-quoted smartparens material-theme js2-mode))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(highlight-beyond-fill-column-face ((t (:foreground "red")))))
+    (lsp-mode find-file-in-project diffscuss-mode py-autopep8 vimish-fold web-beautify web-completion-data highlight recently desktop-environment realgud meghanada hlinum highlight-symbol company  aggressive-indent flycheck flylisp highlight-quoted smartparens material-theme js2-mode))))
 
 ;;; Initialize the package manager
 (eval-and-compile
@@ -89,7 +97,13 @@
 (setq ring-bell-function 'ignore)
 (setq initial-scratch-message "")
 (setq suggest-key-bindings 4)
-(setq inhibit-startup-screen t)
+(setq
+ inhibit-startup-screen t
+ column-number-mode t
+ scroll-error-top-bottom t
+ use-package-always-ensure t)
+
+(set-language-environment "UTF-8")
 
 ;;; Fix scrolling
 (setq mouse-wheel-progressive-speed nil)
@@ -179,22 +193,6 @@
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 
-;; jedi mode setup
-(use-package company-jedi
-  :ensure t
-  :config
-  :hook
-  ((python-mode . jedi:setup))
-  :init
-  (setq jedi:complete-on-dot t)
-  (setq jedi:use-shortcuts t)
-  (add-hook 'python-mode-hook
-            (lambda () (add-to-list 'company-backends 'company-jedi))))
-
-(setq jedi-custom-file (expand-file-name "jedi-custom.el" user-emacs-directory))
-(when (file-exists-p jedi-custom-file)
-  (load jedi-custom-file))
-
 ;; configure line numbers
 (global-linum-mode t)
 (add-hook 'prog-mode-hook 'highlight-beyond-fill-column)
@@ -216,7 +214,7 @@
 (init-el-require-package smartparens)
 (require 'smartparens-config)
 (smartparens-global-mode t)
-
+(show-paren-mode 1)
 (setq sp-highlight-pair-overlay nil)
 (setq sp-highlight-wrap-overlay nil)
 (setq sp-highlight-wrap-tag-overlay nil)
@@ -237,7 +235,11 @@
   (setq save-abbrevs 'silently)
   (setq-default abbrev-mode t))
 
-(set-frame-font "Source Code Pro Medium-13")
+(set-face-attribute 'default nil
+                    :family "Source Code Pro"
+                    :height 130
+                    :weight 'normal
+                    :width 'normal)
 (setq fci-rule-width 1)
 (setq fci-rule-color "darkblue")
 
