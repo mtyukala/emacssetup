@@ -1,7 +1,7 @@
-# emacssetup
-For this confuguration to work. You must have a .emacssetup folder and .emacs file in your home folder.
+# emacs setup
+For this configuration to work. You must have a .emacssetup folder and a .emacs file in your home folder.
 
-**This is how your .emacs file look like:**
+**This is how your .emacs file must look like:**
 ```
 ;;; Package --- Summary
 ;;; Commentary:
