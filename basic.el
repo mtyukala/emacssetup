@@ -6,13 +6,13 @@
 
 
 (when (>= emacs-major-version 24)
-  (require 'package) 
+  (require 'package)
   (package-initialize)
   (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
 		      (not (gnutls-available-p))))
 	 (proto (if no-ssl "http" "https")))
     ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-;;    (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+    ;; (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
     (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
     (when (< emacs-major-version 24)
       ;; For important compatibility libraries like cl-lib
@@ -20,8 +20,6 @@
   )
 
 ;; Bootstrap 'use-package'
-;; (eval-after-load 'gnutls
-;;   '(add-to-list 'gnutls-trustfiles "/etc/ssl/cert.pem"))
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -46,6 +44,7 @@
 
 (display-time-mode 1)
 (global-visual-line-mode)
+
 ;; mode line settings
 (line-number-mode t)
 (column-number-mode t)
@@ -251,6 +250,7 @@
   :config
   (setq highlight-symbol-idle-delay 0.5)
   (add-hook 'prog-mode-hook 'highlight-symbol-mode))
+
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
