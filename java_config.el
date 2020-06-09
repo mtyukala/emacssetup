@@ -31,4 +31,4 @@
   (setq meghanada-maven-path "mvn"))
  )
 
-;;; java.el ends here
+;;; java_config.el ends here

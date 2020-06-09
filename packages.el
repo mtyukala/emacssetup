@@ -16,6 +16,7 @@
     pyenv-mode))
 
 (defun my-packages-installed-p ()
+  "Install all packages defined above."
    (loop for p in my_packages
           when (not (package-installed-p p)) do (return nil)
                   finally (return t)))
