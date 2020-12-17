@@ -6,14 +6,14 @@
 
 
 (when (>= emacs-major-version 24)
-  (require 'package)
-  (package-initialize)
   (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
 		      (not (gnutls-available-p))))
 	 (proto (if no-ssl "http" "https")))
     ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
     ;; (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+    (require 'package)
     (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+    
     (when (< emacs-major-version 24)
       ;; For important compatibility libraries like cl-lib
       (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
@@ -21,13 +21,16 @@
 
 ;; Bootstrap 'use-package'
 (unless (package-installed-p 'use-package)
+  (package-initialize)
   (package-refresh-contents)
-  (package-install 'use-package))
-(eval-when-compile
-  (require 'use-package))
+  (package-install 'use-package)
+  (setq use-package-always-ensure t)
+  (require 'use-package)
+  )
+
 (require 'bind-key)
-(setq use-package-always-ensure t)
-(package-refresh-contents t)
+
+;;(package-refresh-contents t)
 
 ;; duplicate the current line
 (defun duplicate-line()
@@ -229,10 +232,10 @@
   :config
   (global-hl-line-mode +1))
 
-(use-package abbrev
-  :config
-  (setq save-abbrevs 'silently)
-  (setq-default abbrev-mode t))
+;; (use-package abbrev
+;;   :config
+;;   (setq save-abbrevs 'silently)
+;;   (setq-default abbrev-mode t))
 
 (set-face-attribute 'default nil
                     :family "Source Code Pro"

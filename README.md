@@ -15,7 +15,7 @@ For this configuration to work. You must have a .emacssetup folder and a .emacs 
 
 (load "packages.el")
 (load "basic.el")
-;;(load "java.el")
+(load "java_config.el")
 (load "python_config.el")
 (load "web.el")
 

@@ -6,7 +6,8 @@
 (defvar my_packages
   '(better-defaults
     material-theme
-    exec-path-from-shell
+    exec-path-from-shellu
+    exec-path-from-shellu
     ein
     elpy
     flycheck                        ;; On the fly syntax checking
