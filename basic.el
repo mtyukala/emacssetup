@@ -2,36 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'package)
-
-
-(when (>= emacs-major-version 24)
-  (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-		      (not (gnutls-available-p))))
-	 (proto (if no-ssl "http" "https")))
-    ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
-    ;; (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-    (require 'package)
-    (add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
-    
-    (when (< emacs-major-version 24)
-      ;; For important compatibility libraries like cl-lib
-      (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
-  )
-
-;; Bootstrap 'use-package'
-(unless (package-installed-p 'use-package)
-  (package-initialize)
-  (package-refresh-contents)
-  (package-install 'use-package)
-  (setq use-package-always-ensure t)
-  (require 'use-package)
-  )
-
-(require 'bind-key)
-
-;;(package-refresh-contents t)
-
 ;; duplicate the current line
 (defun duplicate-line()
   "Duplicates the current line as it is."
@@ -44,15 +14,15 @@
   (yank)
   )
 (global-set-key (kbd "C-d") 'duplicate-line)
-
+(global-unset-key (kbd "C-z"))
 (display-time-mode 1)
-(global-visual-line-mode)
+(global-display-line-numbers-mode 1)
+(global-visual-line-mode t)
 
-;; mode line settings
-(line-number-mode t)
-(column-number-mode t)
+(setq display-line-numbers-type 'relative)
+
+;;
 (size-indication-mode t)
-
 (save-place-mode 1)
 (show-paren-mode 1)
 
@@ -66,34 +36,13 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (lsp-mode find-file-in-project diffscuss-mode py-autopep8 vimish-fold web-beautify web-completion-data highlight recently desktop-environment realgud meghanada hlinum highlight-symbol company  aggressive-indent flycheck flylisp highlight-quoted smartparens material-theme js2-mode))))
-
-;;; Initialize the package manager
-(eval-and-compile
-  (require 'package)
-  (setq package-enable-at-startup nil)
-  (defvar init-el-package-archives-refreshed nil)
-  (defun init-el-install-package (package-name)
-    (unless (package-installed-p package-name)
-      (unless init-el-package-archives-refreshed
-        (package-refresh-contents)
-        (setq init-el-package-archives-refreshed t))
-      (package-install package-name)))
-  (defmacro init-el-with-eval-after-load (feature &rest body)
-    (declare (indent 1) (debug t))
-    (require feature)
-    `(with-eval-after-load ',feature ,@body))
-  (defmacro init-el-require-package (package-name &optional feature-name)
-    (init-el-install-package package-name)
-    (require (or feature-name package-name))
-    `(init-el-install-package ', package-name)))
+    (find-file-in-project diffscuss-mode  vimish-fold web-beautify web-completion-data highlight recently desktop-environment   highlight-symbol aggressive-indent flycheck flylisp highlight-quoted material-theme js2-mode))))
 
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
 (blink-cursor-mode -1)
-(add-hook 'emacs-startup-hook 'toggle-frame-maximized)
 
 ;; disable the annoying bell ring
 (setq ring-bell-function 'ignore)
@@ -111,7 +60,7 @@
 (setq mouse-wheel-progressive-speed nil)
 (setq scroll-margin 3)
 (setq scroll-conservatively 100000)
-(setq scroll-preserve-screen-position 'always)
+(setq scroll-preserve-screen-position 1)
 (setq-default cursor-type 'hbar)
 
 (setq-default whitespace-style '(face trailing lines empty indentation::space))
@@ -195,76 +144,47 @@
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 
-;; configure line numbers
-(global-linum-mode t)
-(add-hook 'prog-mode-hook 'highlight-beyond-fill-column)
-(setq linum-format "%4d \u2502 ")
-
 ;; ido mode
-(require 'ido-vertical-mode)
 (ido-mode 1)
-(ido-vertical-mode 1)
 (setq ido-default-file-method 'selected-window)
 (setq ido-default-buffer-method 'selected-window)
 (setq ido-enable-flex-matching t)
-(define-key (cdr ido-minor-mode-map-entry) [remap write-file] nil)
+(define-key (cdr ido-minor-mode-map-entry) [(region-end)map write-file] nil)
 
 ;;  tab behavior - indent or complete
 (setq tab-always-indent 'complete)
 
 ;;; smartparens
-(init-el-require-package smartparens)
-(require 'smartparens-config)
-(smartparens-global-mode t)
 (show-paren-mode 1)
 (setq sp-highlight-pair-overlay nil)
 (setq sp-highlight-wrap-overlay nil)
 (setq sp-highlight-wrap-tag-overlay nil)
 (setq-default sp-autoskip-closing-pair t)
-
-(sp-local-pair '(c-mode c++-mode java-mode css-mode php-mode js-mode perl-mode
-                        cperl-mode rust-mode sh-mode)
-               "{" nil
-               :post-handlers '((init-el-smartparens-create-and-enter-block "RET")))
-
-;; highlight the current line
-(use-package hl-line
-  :config
-  (global-hl-line-mode +1))
-
-;; (use-package abbrev
-;;   :config
-;;   (setq save-abbrevs 'silently)
-;;   (setq-default abbrev-mode t))
-
-(set-face-attribute 'default nil
-                    :family "Source Code Pro"
-                    :height 130
-                    :weight 'normal
-                    :width 'normal)
+  
+(set-frame-font "Source Code Pro 13")
 (setq fci-rule-width 1)
 (setq fci-rule-color "darkblue")
 
 ;; start in fullscreen mode
 (add-hook 'emacs-startup-hook 'toggle-frame-maximized)
 
-(use-package highlight-symbol
-  :ensure t
-  :config
-  (setq highlight-symbol-idle-delay 0.5)
-  (add-hook 'prog-mode-hook 'highlight-symbol-mode))
-
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
-
-(use-package yasnippet
-  :config
-  (yas-global-mode 1))
-
 ;;; highlight-quoted
-(init-el-require-package highlight-quoted)
 (add-hook 'emacs-lisp-mode-hook #'highlight-quoted-mode)
 (add-hook 'lisp-mode-hook #'highlight-quoted-mode)
 (add-hook 'scheme-mode-hook #'highlight-quoted-mode)
+
+(defun my-sh-completion-at-point ()
+  "Docs comment here."
+  (let ((end (point))
+        (beg (save-excursion (sh-beginning-of-command))))
+    (when (and beg (> end beg))
+      (bash-completion-dynamic-complete-nocomint beg end t))))
+
+(defun my-sh-hook ()
+  "Doc comment here."
+  (add-hook 'completion-at-point-functions #'my-sh-completion-at-point nil t))
+
+(add-hook 'sh-mode-hook #'my-sh-hook)
+
+
 ;;; basic.el ends here
