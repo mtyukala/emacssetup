@@ -13,9 +13,15 @@
       (add-to-list 'package-archives '("gnu" . (concat proto "://elpa.gnu.org/packages/")))))
   )
 
-
 (package-initialize)
 
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+
+(quelpa '(hydra :repo "abo-abo/hydra" :fetcher github))
 
 ;; Bootstrap 'use-package'
 (unless (package-installed-p 'use-package)
@@ -138,20 +144,6 @@
   :defer
 )
 
-(use-package meghanada
-  :ensure t
-  :defer t
-  :init
-  (add-hook 'java-mode-hook
-            (lambda()
-              (setq c-basic-offset 2)
-              (add-hook 'before-save-hook 'meghanada-code-beautify-before-save)
-              (meghanada-mode t)))
-  :config
-  (use-package realgud
-    :ensure t)
-  (setq meghanada-server-remote-debug t)
-  :commands (meghanada-mode))
 
 (use-package web-mode
   :ensure t
@@ -239,28 +231,29 @@
  
 
 
-;; (use-package go-mode
-;;   :ensure t
-;;   :init
-;;   (setq gofmt-command "goimports")
-;;   :config
-;;   (add-hook 'before-save-hook 'gofmt-before-save))
+(use-package go-mode
+  :ensure t
+  :init
+  (setq gofmt-command "goimports")
+  :config
+  (add-hook 'before-save-hook 'gofmt-before-save))
 
 
-;; (use-package flycheck-golangci-lint
-;;   :ensure t
-;;   :hook (go-mode . flycheck-golangci-lint-setup)
-;;   :init)
+(use-package hlinum
+  :ensure t 
+  :init
+  (hlinum-activate)
+  )
 
 
  
-;; (use-package highlight-quoted
-;;   :ensure t
-;;   :init
-;;   :defer)
+(use-package highlight-quoted
+  :ensure t
+  :init
+  :defer)
 
-;; (use-package which-key
-;;   :ensure t
-;;   :config
-;;   (which-key-mode))
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode))
 ;;; packages.el ends here

@@ -18,25 +18,7 @@ For this configuration to work. You must have a .emacssetup folder and a .emacs 
 (load "java_config.el")
 (load "python_config.el")
 (load "web.el")
-
-;; desktop mode
-(use-package desktop
-  :init
-  (setq desktop-auto-save-timeout 300)
-  (setq desktop-dirname "~/.emacs.d/")
-  (setq desktop-base-file-name "desktop")
-  (setq desktop-files-not-to-save nil)
-  (setq desktop-globals-to-clear nil)
-  (setq desktop-load-locked-desktop t)
-  (setq desktop-missing-file-warning t)
-  (setq desktop-restore-eager 3)
-  (setq desktop-restore-frames nil)
-  (setq desktop-save 'ask-if-new)
-  :config
-  (desktop-save-mode 1)
-  )
-
- 
+  
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

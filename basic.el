@@ -18,8 +18,9 @@
 (display-time-mode 1)
 (global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
-
-(setq display-line-numbers-type 'relative)
+;;(require 'hlinum)
+;;(hlinum-active)
+;;(setq display-line-numbers-type 'relative)
 
 ;;
 (size-indication-mode t)
@@ -185,6 +186,11 @@
   (add-hook 'completion-at-point-functions #'my-sh-completion-at-point nil t))
 
 (add-hook 'sh-mode-hook #'my-sh-hook)
-
-
+(when (commandp 'counsel-M-x)
+  (global-set-key [remap execute-extended-command] #'counsel-M-x))
+```Emacs-lisp
+(quelpa '(eaf :fetcher github
+              :repo  "manateelazycat/emacs-application-framework"
+              :files ("*")))
+(require 'ctable)
 ;;; basic.el ends here
